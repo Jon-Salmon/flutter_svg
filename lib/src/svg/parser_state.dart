@@ -182,6 +182,16 @@ class _Elements {
 
     final DrawableStyleable ref =
         parserState._definitions.getDrawable('url($xlinkHref)');
+
+    // Scale if required
+    final double height =
+        parseDouble(parserState.attribute('height', def: '0'));
+    final double width = parseDouble(parserState.attribute('width', def: '0'));
+    if (width > 0 && height > 0 && ref.style.viewBox != null) {
+      transform.scale(width / ref.style.viewBox.viewBox.width,
+          height / ref.style.viewBox.viewBox.height);
+    }
+
     final DrawableGroup group = DrawableGroup(
       <Drawable>[ref.mergeStyle(style)],
       style,

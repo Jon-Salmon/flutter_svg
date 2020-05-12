@@ -430,5 +430,6 @@ DrawableStyle parseStyle(
       ),
     ),
     blendMode: _blendModes[getAttribute(attributes, 'mix-blend-mode')],
+    viewBox: parseViewBox(attributes, nullOk: true),
   );
 }
