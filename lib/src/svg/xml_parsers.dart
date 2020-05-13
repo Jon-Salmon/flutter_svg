@@ -356,9 +356,9 @@ DrawableStyleable parseMask(
 }
 
 /// Parses a `font-weight` attribute value into a [FontWeight].
-FontWeight parseFontWeight(String fontWeight) {
+FontWeight parseFontWeight(String fontWeight, {FontWeight parentValue}) {
   if (fontWeight == null) {
-    return null;
+    return parentValue;
   }
   switch (fontWeight) {
     case '100':
@@ -383,6 +383,21 @@ FontWeight parseFontWeight(String fontWeight) {
       return FontWeight.w900;
   }
   throw UnsupportedError('Attribute value for font-weight="$fontWeight"'
+      ' is not supported');
+}
+
+/// Parses a `font-style` attribute value into a [FontStyle].
+FontStyle parseFontStyle(String fontStyle, {FontStyle parentValue}) {
+  if (fontStyle == null) {
+    return parentValue;
+  }
+  switch (fontStyle) {
+    case 'normal':
+      return FontStyle.normal;
+    case 'italic':
+      return FontStyle.italic;
+  }
+  throw UnsupportedError('Attribute value for font-style="$fontStyle"'
       ' is not supported');
 }
 
@@ -417,14 +432,18 @@ DrawableStyle parseStyle(
     mask: parseMask(attributes, definitions),
     clipPath: parseClipPath(attributes, definitions),
     textStyle: DrawableTextStyle(
-      fontFamily: getAttribute(attributes, 'font-family'),
+      fontFamily: getAttribute(attributes, 'font-family',
+          def: parentStyle?.textStyle?.fontFamily),
       fontSize: parseFontSize(
         getAttribute(attributes, 'font-size'),
         parentValue: parentStyle?.textStyle?.fontSize,
       ),
       fontWeight: parseFontWeight(
-        getAttribute(attributes, 'font-weight', def: null),
-      ),
+          getAttribute(attributes, 'font-weight', def: null),
+          parentValue: parentStyle?.textStyle?.fontWeight),
+      fontStyle: parseFontStyle(
+          getAttribute(attributes, 'font-style', def: null),
+          parentValue: parentStyle?.textStyle?.fontStyle),
       anchor: parseTextAnchor(
         getAttribute(attributes, 'text-anchor', def: 'inherit'),
       ),
